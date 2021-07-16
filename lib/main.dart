@@ -1,82 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:lecture_exercise/forms/helpers/shared_preferences_helper.dart';
+import 'package:lecture_exercise/forms/router/router.dart';
+import 'package:lecture_exercise/forms/ui/home/ui/home_page.dart';
+import 'package:lecture_exercise/forms/ui/register/main_register_screen.dart';
+import 'package:lecture_exercise/forms/ui/register/splash_screen.dart';
 
-import 'MershatPage.dart';
-import 'customer_page.dart';
 
-enum Type{Customer,Mershat}
+ void main() async {
+   WidgetsFlutterBinding.ensureInitialized();
+   await SpHelper.spHelper.initSharedPreferences();
 
-void main() {
-  runApp(MaterialApp(home:MyApp() ,) );
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  String email;
-  bool visb=false;
-  String password;
-  Type typeValue=Type.Customer;
-
-
-  setEmail(String email){this.email=email;}
-
-  setPassword(String password){this.password=password;}
-
-  GlobalKey<FormState> formKey=GlobalKey<FormState>();
-
-  save(){
-    formKey.currentState.save();
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title:Text('MyApp'),),
-        body: Form(
-            key: formKey,
-            child: Column(
-                children: [
-                  Container(
-                      margin: EdgeInsets.all(20),
-                      child: Row(children: [
-                        Expanded(
-                          child: RadioListTile(
-                            title: Text('Customer'),
-                            value: Type.Customer,
-                            groupValue: typeValue,
-                            onChanged: (v){this.typeValue=v;
-                            visb=false;
-                            setState(() {
-                            });
-                            },
+    return MaterialApp(
+      navigatorKey: AppRouter.router.navKey,
+      home: splach(),
+      /*routes: {
+        '/': (context) => CachImageTest(),
+        // 'home': (context) => HomePage(),
+      },*/
 
-                          ),
-                        ),
-                        Expanded(
-                          child: RadioListTile(
-                            title: Text('Mershat'),
-                            value: Type.Mershat,
-                            groupValue: typeValue,
-                            onChanged: (v){this.typeValue=v;
-                            setState(() {
-                            });
-                            },
-
-                          ),
-                        ),],)
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: typeValue==Type.Mershat?
-                    Mershat_Page():CustomerPage(),
-                  ),
-                ]))
-
+      onGenerateRoute: (RouteSettings routeSettings) {
+        String name = routeSettings.name;
+        var arguments = routeSettings.arguments;
+        switch (name) {
+          case ('home'):
+            return MaterialPageRoute(builder: (context) {
+              return HomePage(arguments);
+            });
+          case ('register'):
+            return MaterialPageRoute(builder: (context) {
+              return FormUi();
+            });
+          default:
+            return MaterialPageRoute(builder: (context) {
+              return Scaffold(
+                  backgroundColor: Colors.redAccent,
+                  body: Center(child: Text('404 the page is not found')));
+            });
+        }
+      },
+      onUnknownRoute: (RouteSettings r) {},
     );
-
   }
 }
-
